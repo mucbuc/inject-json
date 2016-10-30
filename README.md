@@ -1,20 +1,44 @@
-# inclujson
-include for json
+# inject-json
 
-###example
+inject json files in json file
+
+####example
+`cat host.json` => 
+```
 {
-  "include": "../someother.json"
+  "#inject#": [
+    "dep.json"
+  ]
 }
-
-someother.json: 
+```
+`cat dep.json` => 
+```
 {
-  "a": [ 1, 2, 3 ]
+  "version": "1.2.3"
 }
-
-=> 
-
+```
+`inject-json host.json` =>
+```
 {
-  "someother": {
-    "a": [ 1, 2, 3 ]
+  "dep.json": {
+    "version": "1.2.3"
   }
 }
+```
+
+####install
+`npm install inject-json`
+
+####usage 
+```
+  Usage: inject-json [options] <json file>
+
+  Options:
+
+    -h, --help              output usage information
+    -V, --version           output the version number
+    -i, --inject [keyword]  inject keyword ['#inject#']
+```
+
+####roadmap
+- fetch urls
