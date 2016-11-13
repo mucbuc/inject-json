@@ -8,16 +8,6 @@ var assert = require( 'assert' )
   , util = require( 'util' )
   , fs = require( 'fs' );
 
-function lazyMerge( obj, propertyName, value ) {
-  if (!obj.hasOwnProperty(propertyName)) {
-    obj[propertyName] = value;
-  }
-  else {
-    obj[propertyName] = Object.assign( obj[propertyName], value );
-  }
-  return obj;
-}
-
 function defaultObjectReader(filePath, cb) {
   fs.readFile( filePath, (err, data) => {
     
@@ -62,20 +52,18 @@ const process_file = (pathJSON, injectTag) => {
           if (prop.hasOwnProperty(injectTag)) {
             processIncludes( prop[injectTag], fileJSON )
             .then( (sub) => {
-              result = lazyMerge( result, fileJSON, sub ); 
+              result = Object.assign( result, sub );
               next();
             })
-            .catch( () => {
-              reject();
-            });
+            .catch( reject );
           }
           else {
-            result = lazyMerge( result, fileJSON, prop );
+            result = Object.assign( result, prop );
             next();
           }
         })
         .then( () => {
-          resolve(result[fileJSON]); 
+          resolve( result ); 
         })
         .catch( reject );
 
