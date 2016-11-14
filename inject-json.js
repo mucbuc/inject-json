@@ -30,7 +30,7 @@ function defaultObjectReader(filePath, cb) {
   });
 };
 
-const process_file = (pathJSON, injectTag) => {
+function process_file(pathJSON, injectTag, transform) {
   
   const objectReader = defaultObjectReader; 
   
@@ -38,6 +38,12 @@ const process_file = (pathJSON, injectTag) => {
 
   if (typeof injectTag === 'undefined') {
     injectTag = '#inject#';
+  }
+
+  if (typeof transform === 'undefined') {
+    transform = (res, property) => {
+      return Object.assign( res, property );
+    }; 
   }
 
   return processJSON( path.relative( process.cwd(), pathJSON ) ); 
@@ -52,13 +58,13 @@ const process_file = (pathJSON, injectTag) => {
           if (prop.hasOwnProperty(injectTag)) {
             processIncludes( prop[injectTag], fileJSON )
             .then( (sub) => {
-              result = Object.assign( result, sub );
+              result = transform( result, sub );
               next();
             })
             .catch( reject );
           }
           else {
-            result = Object.assign( result, prop );
+            result = transform( result, prop );
             next();
           }
         })
@@ -99,7 +105,7 @@ if (module.parent) {
 }
 else {
   
-  var program = require( 'commander' );
+  let program = require( 'commander' );
   program
     .version( '0.0.0' )
     .usage('[options] <json file>')
@@ -110,6 +116,15 @@ else {
     program.help();
   }
   else {
+    let transform; 
+    if (program.transform) {
+      const vm = require( 'vm' )
+        , context = vm.createContext()
+        , script = new vm.Script( program.transform ); 
+    
+        transform = script().
+    }
+
     process_file( program.args[0], program.inject )
     .then( (result) => {
       console.log( JSON.stringify(result, null, 2) );
