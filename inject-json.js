@@ -30,7 +30,7 @@ function defaultObjectReader(filePath, cb) {
   });
 };
 
-function process_file(pathJSON, injectTag, transform) {
+function process_file(pathJSON, injectTag, merge) {
   
   const objectReader = defaultObjectReader; 
   
@@ -40,9 +40,9 @@ function process_file(pathJSON, injectTag, transform) {
     injectTag = '#inject#';
   }
 
-  if (typeof transform === 'undefined') {
-    transform = (res, property) => {
-      return Object.assign( res, property );
+  if (typeof merge === 'undefined') {
+    merge = (result, next, cb) => {
+      cb( Object.assign( result, next ) );
     }; 
   }
 
@@ -58,14 +58,19 @@ function process_file(pathJSON, injectTag, transform) {
           if (prop.hasOwnProperty(injectTag)) {
             processIncludes( prop[injectTag], fileJSON )
             .then( (sub) => {
-              result = transform( result, sub );
-              next();
+              merge( result, sub, ( merged ) => {
+                result = merged;
+                next(); 
+              });
+            
             })
             .catch( reject );
           }
           else {
-            result = transform( result, prop );
-            next();
+            merge( result, prop, ( merged ) => {
+              result = merged;
+              next(); 
+            });
           }
         })
         .then( () => {
@@ -110,23 +115,23 @@ else {
     .version( '0.0.0' )
     .usage('[options] <json file>')
     .option( '-i, --inject [keyword]', "inject keyword ['#inject#']" )
-    .option( '-t, --transform [function]', 'specify transform. default = (res, property) => { return Object.assign( res, property ); }' )
+    .option( '-m, --merge [function]', 'specify merge. default = (result, next, cb) => { cb( Object.assign( result, next ) ); }' )
     .parse(process.argv);
   
   if (program.args.length !== 1) {
     program.help();
   }
   else {
-    let transform; 
-    if (program.transform) {
+    let merge; 
+    if (program.merge) {
       const vm = require( 'vm' )
         , context = vm.createContext()
-        , script = new vm.Script( program.transform );
+        , script = new vm.Script( program.merge );
     
-      transform = script.runInContext( context ); 
+      merge = script.runInContext( context ); 
     }
 
-    process_file( program.args[0], program.inject, transform )
+    process_file( program.args[0], program.inject, merge )
     .then( (result) => {
       console.log( JSON.stringify(result, null, 2) );
     })
