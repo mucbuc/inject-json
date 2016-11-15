@@ -109,7 +109,8 @@ else {
   program
     .version( '0.0.0' )
     .usage('[options] <json file>')
-    .option( '-i, --inject [keyword]', "inject keyword ['#inject#']")
+    .option( '-i, --inject [keyword]', "inject keyword ['#inject#']" )
+    .option( '-t, --transform [function]', 'specify transform. default = (res, property) => { return Object.assign( res, property ); }' )
     .parse(process.argv);
   
   if (program.args.length !== 1) {
@@ -120,12 +121,12 @@ else {
     if (program.transform) {
       const vm = require( 'vm' )
         , context = vm.createContext()
-        , script = new vm.Script( program.transform ); 
+        , script = new vm.Script( program.transform );
     
-        transform = script().
+      transform = script.runInContext( context ); 
     }
 
-    process_file( program.args[0], program.inject )
+    process_file( program.args[0], program.inject, transform )
     .then( (result) => {
       console.log( JSON.stringify(result, null, 2) );
     })
