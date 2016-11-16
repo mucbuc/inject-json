@@ -41,7 +41,7 @@ function process_file(pathJSON, injectTag, merge) {
   }
 
   if (typeof merge === 'undefined') {
-    merge = (result, next, cb) => {
+    merge = (result, next, path, cb) => {
       cb( Object.assign( result, next ) );
     }; 
   }
@@ -58,7 +58,7 @@ function process_file(pathJSON, injectTag, merge) {
           if (prop.hasOwnProperty(injectTag)) {
             processIncludes( prop[injectTag], fileJSON )
             .then( (sub) => {
-              merge( result, sub, ( merged ) => {
+              merge( result, sub, fileJSON, ( merged ) => {
                 result = merged;
                 next(); 
               });
@@ -67,7 +67,7 @@ function process_file(pathJSON, injectTag, merge) {
             .catch( reject );
           }
           else {
-            merge( result, prop, ( merged ) => {
+            merge( result, prop, fileJSON, ( merged ) => {
               result = merged;
               next(); 
             });
