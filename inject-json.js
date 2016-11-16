@@ -30,7 +30,7 @@ function defaultObjectReader(filePath, cb) {
   });
 };
 
-const process_file = (pathJSON, injectTag) => {
+function process_file(pathJSON, injectTag, merge) {
   
   const objectReader = defaultObjectReader; 
   
@@ -38,6 +38,12 @@ const process_file = (pathJSON, injectTag) => {
 
   if (typeof injectTag === 'undefined') {
     injectTag = '#inject#';
+  }
+
+  if (typeof merge === 'undefined') {
+    merge = (result, next, path, cb) => {
+      cb( Object.assign( result, next ) );
+    }; 
   }
 
   return processJSON( path.relative( process.cwd(), pathJSON ) ); 
@@ -52,14 +58,19 @@ const process_file = (pathJSON, injectTag) => {
           if (prop.hasOwnProperty(injectTag)) {
             processIncludes( prop[injectTag], fileJSON )
             .then( (sub) => {
-              result = Object.assign( result, sub );
-              next();
+              merge( result, sub, fileJSON, ( merged ) => {
+                result = merged;
+                next(); 
+              });
+            
             })
             .catch( reject );
           }
           else {
-            result = Object.assign( result, prop );
-            next();
+            merge( result, prop, fileJSON, ( merged ) => {
+              result = merged;
+              next(); 
+            });
           }
         })
         .then( () => {
@@ -99,18 +110,28 @@ if (module.parent) {
 }
 else {
   
-  var program = require( 'commander' );
+  let program = require( 'commander' );
   program
     .version( '0.0.0' )
     .usage('[options] <json file>')
-    .option( '-i, --inject [keyword]', "inject keyword ['#inject#']")
+    .option( '-i, --inject [keyword]', "inject keyword ['#inject#']" )
+    .option( '-m, --merge [function]', 'specify merge. default = (result, next, cb) => { cb( Object.assign( result, next ) ); }' )
     .parse(process.argv);
   
   if (program.args.length !== 1) {
     program.help();
   }
   else {
-    process_file( program.args[0], program.inject )
+    let merge; 
+    if (program.merge) {
+      const vm = require( 'vm' )
+        , context = vm.createContext()
+        , script = new vm.Script( program.merge );
+    
+      merge = script.runInContext( context ); 
+    }
+
+    process_file( program.args[0], program.inject, merge )
     .then( (result) => {
       console.log( JSON.stringify(result, null, 2) );
     })
