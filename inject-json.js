@@ -41,8 +41,8 @@ function process_file(pathJSON, injectTag, merge) {
   }
 
   if (typeof merge === 'undefined') {
-    merge = (result, next, path, cb) => {
-      cb( Object.assign( result, next ) );
+    merge = (next, path, cb) => {
+      cb( next );
     }; 
   }
 
@@ -58,8 +58,8 @@ function process_file(pathJSON, injectTag, merge) {
           if (prop.hasOwnProperty(injectTag)) {
             processIncludes( prop[injectTag], fileJSON )
             .then( (sub) => {
-              merge( result, sub, fileJSON, ( merged ) => {
-                result = merged;
+              merge( sub, fileJSON, ( merged ) => {
+                result = Object.assign( result, merged );
                 next(); 
               });
             
@@ -67,8 +67,8 @@ function process_file(pathJSON, injectTag, merge) {
             .catch( reject );
           }
           else {
-            merge( result, prop, fileJSON, ( merged ) => {
-              result = merged;
+            merge( prop, fileJSON, ( merged ) => {
+              result = Object.assign( result, merged );
               next(); 
             });
           }
@@ -115,7 +115,7 @@ else {
     .version( '0.0.0' )
     .usage('[options] <json file>')
     .option( '-i, --inject [keyword]', "inject keyword ['#inject#']" )
-    .option( '-m, --merge [function]', 'specify merge. default = (result, next, cb) => { cb( Object.assign( result, next ) ); }' )
+    .option( '-m, --merge [function]', 'specify merge. default = (next, path, cb) => {cb( next );}' )
     .parse(process.argv);
   
   if (program.args.length !== 1) {
