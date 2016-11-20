@@ -1,6 +1,6 @@
 {
   "name": "inject-json",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "inject json files in json file",
   "main": "inject-json.js",
   "bin": "./inject-json.js",
@@ -19,8 +19,7 @@
   "homepage": "https://github.com/mucbuc/inject-json#readme",
   "devDependencies": {
     "tape": "*",
-    "expector": "*",
-    "json-stable-stringify": "*"
+    "expector": "*"
   },
   "dependencies": {
     "traverjs": "*",
