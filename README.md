@@ -38,6 +38,7 @@ inject json files in json file
     -h, --help              output usage information
     -V, --version           output the version number
     -i, --inject [keyword]  inject keyword ['#inject#']
+    -m, --merge [function]  specify merge. default = (next, path, cb) => {cb( next );}
 ```
 
 ####roadmap

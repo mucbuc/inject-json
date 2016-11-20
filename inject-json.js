@@ -115,7 +115,7 @@ else {
     .version( '0.0.0' )
     .usage('[options] <json file>')
     .option( '-i, --inject [keyword]', "inject keyword ['#inject#']" )
-    .option( '-m, --merge [function]', 'specify merge. default = (next, cb) => { cb( Object.assign( next ) ); }' )
+    .option( '-m, --merge [function]', 'specify merge. default = (next, path, cb) => {cb( next );}' )
     .parse(process.argv);
   
   if (program.args.length !== 1) {
