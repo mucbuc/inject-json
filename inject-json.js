@@ -30,9 +30,12 @@ function defaultObjectReader(filePath, cb) {
   });
 };
 
-function process_file(pathJSON, injectTag, merge) {
+function process_file(pathJSON, injectTag, merge, rootDirectory) {
   
-  const objectReader = defaultObjectReader; 
+  const objectReader = defaultObjectReader;
+
+  if (typeof rootDirectory === 'undefined')
+    rootDirectory = process.cwd();  
   
   assert( typeof pathJSON !== 'undefined' );
 
@@ -46,7 +49,7 @@ function process_file(pathJSON, injectTag, merge) {
     }; 
   }
 
-  return processJSON( path.relative( process.cwd(), pathJSON ) ); 
+  return processJSON( path.relative( rootDirectory, pathJSON ) ); 
 
   function processJSON(fileJSON) {
     return new Promise( (resolve, reject) => {
