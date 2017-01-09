@@ -19,8 +19,7 @@
   "homepage": "https://github.com/mucbuc/inject-json#readme",
   "devDependencies": {
     "tape": "*",
-    "expector": "*",
-    "json-stable-stringify": "*"
+    "expector": "*"
   },
   "dependencies": {
     "traverjs": "*",

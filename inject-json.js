@@ -30,15 +30,12 @@ function defaultObjectReader(filePath, cb) {
   });
 };
 
-function process_file(pathJSON, injectTag, merge, rootDirectory) {
-  
-  const objectReader = defaultObjectReader;
-
-  if (typeof rootDirectory === 'undefined')
-    rootDirectory = process.cwd();  
+function processFile(pathJSON, injectTag, merge) {
   
   assert( typeof pathJSON !== 'undefined' );
 
+  const objectReader = defaultObjectReader;
+  
   if (typeof injectTag === 'undefined') {
     injectTag = '#inject#';
   }
@@ -49,7 +46,7 @@ function process_file(pathJSON, injectTag, merge, rootDirectory) {
     }; 
   }
 
-  return processJSON( path.relative( rootDirectory, pathJSON ) ); 
+  return processJSON( pathJSON ); 
 
   function processJSON(fileJSON) {
     return new Promise( (resolve, reject) => {
@@ -108,7 +105,7 @@ function process_file(pathJSON, injectTag, merge, rootDirectory) {
 };
 
 if (module.parent) {
-  module.exports = process_file;
+  module.exports = processFile;
   return;
 }
 else {
@@ -134,7 +131,7 @@ else {
       merge = script.runInContext( context ); 
     }
 
-    process_file( program.args[0], program.inject, merge )
+    processFile( program.args[0], program.inject, merge )
     .then( (result) => {
       console.log( JSON.stringify(result, null, 2) );
     })

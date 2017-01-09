@@ -4,19 +4,21 @@
 const testTape = require( 'tape' )
   , includer = require( './../inject-json.js' )
   , Expector = require( 'expector' ).Expector
-  , stringify = require('json-stable-stringify')
   , path = require( 'path' );
 
 function test( name, jsonPath, expected ) {
   
+  console.log( 'cwd:', process.cwd() );
+  console.log( 'json:', path.join( __dirname, jsonPath ) );
+
   testTape( name, (t) => {
     var controller = new Expector(t)
       , obj = require( expected );
 
-    controller.expect( stringify(obj) );
+    controller.expect( obj );
     includer( path.join( __dirname, jsonPath ) )
     .then( (result) => {
-      controller.emit( stringify( result ) ).check();
+      controller.emit( result ).check();
     });
   }); 
 }
