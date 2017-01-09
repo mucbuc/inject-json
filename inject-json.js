@@ -11,9 +11,9 @@ var assert = require( 'assert' )
 function defaultObjectReader(filePath, cb) {
   fs.readFile( filePath, (err, data) => {
     
-    if (err) 
+    if (err) {
       onError(err);
-    
+    }
     try {
       const content = JSON.parse(data.toString());
       cb( content ); 
@@ -30,12 +30,12 @@ function defaultObjectReader(filePath, cb) {
   });
 };
 
-function process_file(pathJSON, injectTag, merge) {
-  
-  const objectReader = defaultObjectReader; 
+function processFile(pathJSON, injectTag, merge) {
   
   assert( typeof pathJSON !== 'undefined' );
 
+  const objectReader = defaultObjectReader;
+  
   if (typeof injectTag === 'undefined') {
     injectTag = '#inject#';
   }
@@ -46,7 +46,7 @@ function process_file(pathJSON, injectTag, merge) {
     }; 
   }
 
-  return processJSON( path.relative( process.cwd(), pathJSON ) ); 
+  return processJSON( pathJSON ); 
 
   function processJSON(fileJSON) {
     return new Promise( (resolve, reject) => {
@@ -105,14 +105,14 @@ function process_file(pathJSON, injectTag, merge) {
 };
 
 if (module.parent) {
-  module.exports = process_file;
+  module.exports = processFile;
   return;
 }
 else {
   
   let program = require( 'commander' );
   program
-    .version( '0.0.0' )
+    .version( '0.0.4' )
     .usage('[options] <json file>')
     .option( '-i, --inject [keyword]', "inject keyword ['#inject#']" )
     .option( '-m, --merge [function]', 'specify merge. default = (next, path, cb) => {cb( next );}' )
@@ -131,7 +131,7 @@ else {
       merge = script.runInContext( context ); 
     }
 
-    process_file( program.args[0], program.inject, merge )
+    processFile( program.args[0], program.inject, merge )
     .then( (result) => {
       console.log( JSON.stringify(result, null, 2) );
     })

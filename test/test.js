@@ -7,7 +7,7 @@ const testTape = require( 'tape' )
   , path = require( 'path' );
 
 function test( name, jsonPath, expected ) {
-  
+
   testTape( name, (t) => {
     var controller = new Expector(t)
       , obj = require( expected );
