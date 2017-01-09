@@ -112,7 +112,7 @@ else {
   
   let program = require( 'commander' );
   program
-    .version( '0.0.4' )
+    .version( '0.0.5' )
     .usage('[options] <json file>')
     .option( '-i, --inject [keyword]', "inject keyword ['#inject#']" )
     .option( '-m, --merge [function]', 'specify merge. default = (next, path, cb) => {cb( next );}' )
