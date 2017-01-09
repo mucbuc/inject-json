@@ -11,9 +11,9 @@ var assert = require( 'assert' )
 function defaultObjectReader(filePath, cb) {
   fs.readFile( filePath, (err, data) => {
     
-    if (err) 
+    if (err) {
       onError(err);
-    
+    }
     try {
       const content = JSON.parse(data.toString());
       cb( content ); 
