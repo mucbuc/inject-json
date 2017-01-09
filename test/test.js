@@ -7,9 +7,6 @@ const testTape = require( 'tape' )
   , path = require( 'path' );
 
 function test( name, jsonPath, expected ) {
-  
-  console.log( 'cwd:', process.cwd() );
-  console.log( 'json:', path.join( __dirname, jsonPath ) );
 
   testTape( name, (t) => {
     var controller = new Expector(t)
