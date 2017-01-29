@@ -1,0 +1,8 @@
+{
+  "mac": {
+  	"#inject#": [
+    	"sublib/def.json",
+    	"lib/def.json"
+  	]
+  }
+}

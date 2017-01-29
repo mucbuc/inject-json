@@ -1,0 +1,18 @@
+{
+  "mac": {
+    "sublib/def.json": {
+      "sublib2/def.json": {
+        "sources": [
+          "src/subsrc.cpp" 
+        ]
+      },
+      "sources":[
+        "src/subsrc.h",
+        "src/subsrc.cpp"
+      ]
+    },
+    "lib/def.json": {
+      "a": "b"
+    }
+  }
+}
