@@ -54,17 +54,26 @@ function processFile(pathJSON, injectTag, merge) {
       objectReader( fileJSON, (content) => {
         
         var result = {};
-        walkJSON( content, (prop, propName, unused2, next) => {
-        //traverse( content, (prop, next) => {
-          console.log( prop, propName );
-
-          if (propName == injectTag) {
+        walkJSON( content, (prop, propName, next, skip) => {
+          if (propName.endsWith(injectTag)) {
             processIncludes( prop, fileJSON )
             .then( (sub) => {
-              merge( sub, fileJSON, ( merged ) => {
-                result = Object.assign( result, merged );
-                next(); 
-              });
+              
+              if (propName == injectTag)
+              {
+                merge( sub, fileJSON, ( merged ) => {
+                  result = Object.assign( result, merged );
+                  skip(); 
+                });
+              }
+              else
+              {
+                let name = propName.substr(0, propName.length - injectTag.length);
+                merge( {[name]: sub}, fileJSON, ( merged ) => {
+                  result = Object.assign( result, merged );
+                  skip(); 
+                });
+              }
             
             })
             .catch( reject );
@@ -72,10 +81,9 @@ function processFile(pathJSON, injectTag, merge) {
           else {
             merge( {[propName]: prop}, fileJSON, ( merged ) => {
               result = Object.assign( result, merged );
-              next(); 
+              next();
             });
           }
-
         })
         .then( () => {
           resolve( result ); 
@@ -90,7 +98,6 @@ function processFile(pathJSON, injectTag, merge) {
     return new Promise( (resolve, reject) => {
       var result = {};
       const dirJSON = path.dirname(fileJSON);
-      //walkJSON( includes, ( item,  unused1, unused2, next ) => {
       traverse( includes, ( item, next ) => {
         processJSON( path.join( dirJSON, item ) )
         .then( (sub) => {

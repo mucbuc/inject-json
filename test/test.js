@@ -15,9 +15,6 @@ function test( name, jsonPath, expected ) {
     controller.expect( obj );
     includer( path.join( __dirname, jsonPath ) )
     .then( (result) => {
-
-      console.log( '3333', result );
-
       controller.emit( result ).check();
     });
   }); 
@@ -25,3 +22,4 @@ function test( name, jsonPath, expected ) {
 
 test( 'recursive inject', 'test.json', './result.json' );
 test( 'example', 'example/host.json', './example/result.json' );
+test( 'nested inject', 'nested.json', './nested_result.json' );
