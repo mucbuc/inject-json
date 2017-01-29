@@ -22,7 +22,7 @@
     "expector": "*"
   },
   "dependencies": {
-    "traverjs": "*",
+    "walk-json": "*",
     "commander": "*"
   }
 }

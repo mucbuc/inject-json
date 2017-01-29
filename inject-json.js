@@ -3,6 +3,7 @@
 'use strict';
 
 var assert = require( 'assert' )
+  , walkJSON = require( 'walk-json' )
   , traverse = require( 'traverjs' )
   , path = require( 'path' ) 
   , util = require( 'util' )
@@ -53,10 +54,12 @@ function processFile(pathJSON, injectTag, merge) {
       objectReader( fileJSON, (content) => {
         
         var result = {};
-        traverse( content, (prop, next) => {
+        walkJSON( content, (prop, propName, unused2, next) => {
+        //traverse( content, (prop, next) => {
+          console.log( prop, propName );
 
-          if (prop.hasOwnProperty(injectTag)) {
-            processIncludes( prop[injectTag], fileJSON )
+          if (propName == injectTag) {
+            processIncludes( prop, fileJSON )
             .then( (sub) => {
               merge( sub, fileJSON, ( merged ) => {
                 result = Object.assign( result, merged );
@@ -67,11 +70,12 @@ function processFile(pathJSON, injectTag, merge) {
             .catch( reject );
           }
           else {
-            merge( prop, fileJSON, ( merged ) => {
+            merge( {[propName]: prop}, fileJSON, ( merged ) => {
               result = Object.assign( result, merged );
               next(); 
             });
           }
+
         })
         .then( () => {
           resolve( result ); 
@@ -86,6 +90,7 @@ function processFile(pathJSON, injectTag, merge) {
     return new Promise( (resolve, reject) => {
       var result = {};
       const dirJSON = path.dirname(fileJSON);
+      //walkJSON( includes, ( item,  unused1, unused2, next ) => {
       traverse( includes, ( item, next ) => {
         processJSON( path.join( dirJSON, item ) )
         .then( (sub) => {
