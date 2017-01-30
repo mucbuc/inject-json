@@ -15,8 +15,6 @@ function test( name, jsonPath, expected ) {
     controller.expect( obj );
     includer( path.join( __dirname, jsonPath ) )
     .then( (result) => {
-      
-      console.log( 'result:', JSON.stringify( result, null, 2 ) );
       controller.emit( result ).check();
     });
   }); 
