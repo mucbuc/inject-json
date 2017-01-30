@@ -52,45 +52,71 @@ function processFile(pathJSON, injectTag, merge) {
   function processJSON(fileJSON) {
     return new Promise( (resolve, reject) => {
       objectReader( fileJSON, (content) => {
-        
-        var result = {};
-        walkJSON( content, (prop, propName, next, skip) => {
-          if (propName.endsWith(injectTag)) {
-            processIncludes( prop, fileJSON )
-            .then( (sub) => {
-              
-              if (propName == injectTag)
-              {
-                merge( sub, fileJSON, ( merged ) => {
-                  result = Object.assign( result, merged );
-                  skip(); 
-                });
-              }
-              else
-              {
-                let name = propName.substr(0, propName.length - injectTag.length);
-                merge( {[name]: sub}, fileJSON, ( merged ) => {
-                  result = Object.assign( result, merged );
-                  skip(); 
-                });
-              }
+        processJSONContent(content, fileJSON)
+        .then( resolve )
+        .catch( reject );
+      });
+    });
+  }
+
+  function processJSONContent(content, fileJSON) {
+    return new Promise( (resolve, reject) => {
+      var result = {};
+      walkJSON( content, (prop, propName, next, skip) => {
+        if (propName.endsWith(injectTag)) {
+          processIncludes( prop, fileJSON )
+          .then( (sub) => {
             
-            })
-            .catch( reject );
-          }
-          else {
+            if (propName == injectTag)
+            {
+              merge( sub, fileJSON, ( merged ) => {
+                result = Object.assign( result, merged );
+                skip(); 
+              });
+            }
+            else
+            {
+              let name = propName.substr(0, propName.length - injectTag.length);
+              merge( {[name]: sub}, fileJSON, ( merged ) => {
+                result = Object.assign( result, merged );
+                skip(); 
+              });
+            }
+          
+          })
+          .catch( reject );
+        }
+        else //if ( typeof prop === 'object') 
+        {
+
+          console.log( 'processJSONContent: ', propName, prop, typeof prop );
+
+          //processJSONContent( prop, fileJSON)
+          //.then( sub => {
+
+            //console.log( 'sub: ', sub, result );
+
+            //result = Object.assign( sub, merged );
+            //skip();
             merge( {[propName]: prop}, fileJSON, ( merged ) => {
               result = Object.assign( result, merged );
+              //skip();
               next();
             });
-          }
-        })
-        .then( () => {
-          resolve( result ); 
-        })
-        .catch( reject );
 
-      });
+          //});
+        }
+        // else {
+
+        //   //console.log( 'other: ', propName, prop, typeof prop );
+
+        //   next();
+        // }
+      })
+      .then( () => {
+        resolve( result ); 
+      })
+      .catch( reject );
     });
   }
 
