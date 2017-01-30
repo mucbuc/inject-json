@@ -60,9 +60,6 @@ function processFile(pathJSON, injectTag, merge) {
   }
 
   function processJSONContent(content, fileJSON) {
-
-    console.log( 'processJSONContent: ', content );
-
     return new Promise( (resolve, reject) => {
       var result = {};
       walkJSON( content, (prop, propName, next, skip) => {
@@ -92,29 +89,20 @@ function processFile(pathJSON, injectTag, merge) {
         else if (   typeof prop === 'object'
                 &&  !Array.isArray(prop))
         {
-          //console.log( 'isArray', );
-
           processJSONContent( prop, fileJSON)
           .then( sub => {
-
-            console.log( '******: ', prop, sub );
-
-            //result = Object.assign( sub, merged );
-            //skip();
             merge( {[propName]: sub}, fileJSON, ( merged ) => {
               result = Object.assign( result, merged );
               skip();
-              //next();
             });
 
           });
         }
         else {
-            merge( {[propName]: prop}, fileJSON, ( merged ) => {
-              result = Object.assign( result, merged );
-              //skip();
-              next();
-            });
+          merge( {[propName]: prop}, fileJSON, ( merged ) => {
+            result = Object.assign( result, merged );
+            next();
+          });
         }
       })
       .then( () => {
