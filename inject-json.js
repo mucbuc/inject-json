@@ -3,6 +3,7 @@
 'use strict';
 
 var assert = require( 'assert' )
+  , walkJSON = require( 'walk-json' )
   , traverse = require( 'traverjs' )
   , path = require( 'path' ) 
   , util = require( 'util' )
@@ -51,34 +52,63 @@ function processFile(pathJSON, injectTag, merge) {
   function processJSON(fileJSON) {
     return new Promise( (resolve, reject) => {
       objectReader( fileJSON, (content) => {
-        
-        var result = {};
-        traverse( content, (prop, next) => {
+        processJSONContent(content, fileJSON)
+        .then( resolve )
+        .catch( reject );
+      });
+    });
+  }
 
-          if (prop.hasOwnProperty(injectTag)) {
-            processIncludes( prop[injectTag], fileJSON )
-            .then( (sub) => {
+  function processJSONContent(content, fileJSON) {
+    return new Promise( (resolve, reject) => {
+      var result = {};
+      walkJSON( content, (prop, propName, next, skip) => {
+        if (propName.endsWith(injectTag)) {
+          processIncludes( prop, fileJSON )
+          .then( (sub) => {
+            
+            if (propName == injectTag)
+            {
               merge( sub, fileJSON, ( merged ) => {
                 result = Object.assign( result, merged );
-                next(); 
+                skip(); 
               });
-            
-            })
-            .catch( reject );
-          }
-          else {
-            merge( prop, fileJSON, ( merged ) => {
+            }
+            else
+            {
+              let name = propName.substr(0, propName.length - injectTag.length);
+              merge( {[name]: sub}, fileJSON, ( merged ) => {
+                result = Object.assign( result, merged );
+                skip(); 
+              });
+            }
+          
+          })
+          .catch( reject );
+        }
+        else if (   typeof prop === 'object'
+                &&  !Array.isArray(prop))
+        {
+          processJSONContent( prop, fileJSON)
+          .then( sub => {
+            merge( {[propName]: sub}, fileJSON, ( merged ) => {
               result = Object.assign( result, merged );
-              next(); 
+              skip();
             });
-          }
-        })
-        .then( () => {
-          resolve( result ); 
-        })
-        .catch( reject );
 
-      });
+          });
+        }
+        else {
+          merge( {[propName]: prop}, fileJSON, ( merged ) => {
+            result = Object.assign( result, merged );
+            next();
+          });
+        }
+      })
+      .then( () => {
+        resolve( result ); 
+      })
+      .catch( reject );
     });
   }
 
@@ -112,7 +142,7 @@ else {
   
   let program = require( 'commander' );
   program
-    .version( '0.0.4' )
+    .version( '0.0.5' )
     .usage('[options] <json file>')
     .option( '-i, --inject [keyword]', "inject keyword ['#inject#']" )
     .option( '-m, --merge [function]', 'specify merge. default = (next, path, cb) => {cb( next );}' )

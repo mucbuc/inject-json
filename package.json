@@ -1,6 +1,6 @@
 {
   "name": "inject-json",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "inject json files in json file",
   "main": "inject-json.js",
   "bin": "./inject-json.js",
@@ -22,7 +22,7 @@
     "expector": "*"
   },
   "dependencies": {
-    "traverjs": "*",
+    "walk-json": "*",
     "commander": "*"
   }
 }

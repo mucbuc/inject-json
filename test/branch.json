@@ -1,0 +1,10 @@
+{
+	"branches": {
+		"mac": { 
+			"config": [
+				"config.gypi"
+			]
+		},
+		"win": "something"
+	}
+}
