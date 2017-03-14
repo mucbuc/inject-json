@@ -2,7 +2,7 @@
 
 'use strict';
 
-var assert = require( 'assert' )
+const assert = require( 'assert' )
   , walkJSON = require( 'walk-json' )
   , traverse = require( 'traverjs' )
   , path = require( 'path' ) 
