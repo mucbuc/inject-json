@@ -140,7 +140,7 @@ if (module.parent) {
 }
 else {
   
-  let program = require( 'commander' );
+  const program = require( 'commander' );
   program
     .version( '0.0.5' )
     .usage('[options] <json file>')
