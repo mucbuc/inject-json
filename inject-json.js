@@ -2,6 +2,8 @@
 
 'use strict';
 
+//test
+
 const assert = require( 'assert' )
   , walkJSON = require( 'walk-json' )
   , traverse = require( 'traverjs' )
