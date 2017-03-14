@@ -1,9 +1,7 @@
 #!/usr/bin/env node
 
 'use strict';
-
-//testsdfsawewewdwesdssds
-
+//sdfss
 const assert = require( 'assert' )
   , walkJSON = require( 'walk-json' )
   , traverse = require( 'traverjs' )
