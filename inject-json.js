@@ -47,24 +47,25 @@ function processFile(pathJSON, injectTag, merge) {
     }; 
   }
 
-  return processJSON( pathJSON ); 
+  return processJSON( pathJSON, path.dirname(pathJSON) ); 
 
-  function processJSON(fileJSON) {
+  function processJSON(fileJSON, root ) {
     return new Promise( (resolve, reject) => {
       objectReader( fileJSON, (content) => {
-        processJSONContent(content, fileJSON)
+        processJSONContent(content, fileJSON, root)
         .then( resolve )
         .catch( reject );
       });
     });
   }
 
-  function processJSONContent(content, fileJSON) {
+  function processJSONContent(content, fileJSON, root) {
     return new Promise( (resolve, reject) => {
       var result = {};
       walkJSON( content, (prop, propName, next, skip) => {
         if (propName.endsWith(injectTag)) {
-          processIncludes( prop, fileJSON )
+
+          processIncludes( prop, root )
           .then( (sub) => {
             
             if (propName == injectTag)
@@ -112,12 +113,14 @@ function processFile(pathJSON, injectTag, merge) {
     });
   }
 
-  function processIncludes(includes, fileJSON, cb) {
+  function processIncludes(includes, root) {
     return new Promise( (resolve, reject) => {
       var result = {};
-      const dirJSON = path.dirname(fileJSON);
       traverse( includes, ( item, next ) => {
-        processJSON( path.join( dirJSON, item ) )
+        
+        item = path.join(root, item);
+
+        processJSON( item, path.dirname(item) )
         .then( (sub) => {
           
           result[item] = sub;
