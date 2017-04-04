@@ -47,25 +47,24 @@ function processFile(pathJSON, injectTag, merge) {
     }; 
   }
 
-  return processJSON( pathJSON, path.dirname(pathJSON) ); 
+  return processJSON( pathJSON ); 
 
-  function processJSON(fileJSON, dirJSON) {
-    
+  function processJSON(fileJSON) {
     return new Promise( (resolve, reject) => {
       objectReader( fileJSON, (content) => {
-        processJSONContent(content, fileJSON, dirJSON)
+        processJSONContent(content, fileJSON)
         .then( resolve )
         .catch( reject );
       });
     });
   }
 
-  function processJSONContent(content, fileJSON, dirJSON) {
+  function processJSONContent(content, fileJSON) {
     return new Promise( (resolve, reject) => {
       var result = {};
       walkJSON( content, (prop, propName, next, skip) => {
         if (propName.endsWith(injectTag)) {
-          processIncludes( prop, fileJSON, dirJSON )
+          processIncludes( prop, fileJSON )
           .then( (sub) => {
             
             if (propName == injectTag)
@@ -90,7 +89,7 @@ function processFile(pathJSON, injectTag, merge) {
         else if (   typeof prop === 'object'
                 &&  !Array.isArray(prop))
         {
-          processJSONContent( prop, fileJSON, dirJSON)
+          processJSONContent( prop, fileJSON)
           .then( sub => {
             merge( {[propName]: sub}, fileJSON, ( merged ) => {
               result = Object.assign( result, merged );
@@ -113,11 +112,12 @@ function processFile(pathJSON, injectTag, merge) {
     });
   }
 
-  function processIncludes(includes, fileJSON, dirJSON, cb) {
+  function processIncludes(includes, fileJSON, cb) {
     return new Promise( (resolve, reject) => {
       var result = {};
+      const dirJSON = path.dirname(fileJSON);
       traverse( includes, ( item, next ) => {
-        processJSON( path.join( dirJSON, item ), dirJSON )
+        processJSON( path.join( dirJSON, item ) )
         .then( (sub) => {
           
           result[item] = sub;
