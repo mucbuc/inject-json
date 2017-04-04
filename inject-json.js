@@ -117,9 +117,6 @@ function processFile(pathJSON, injectTag, merge) {
     return new Promise( (resolve, reject) => {
       var result = {};
       traverse( includes, ( item, next ) => {
-
-        console.log( 'path:', path.join( dirJSON, item ) );
-
         processJSON( path.join( dirJSON, item ), dirJSON )
         .then( (sub) => {
           
