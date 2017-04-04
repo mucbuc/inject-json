@@ -1,6 +1,6 @@
 {
   "name": "inject-json",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "description": "inject json files in json file",
   "main": "inject-json.js",
   "bin": "./inject-json.js",
@@ -12,7 +12,7 @@
     "url": "git+https://github.com/mucbuc/inject-json.git"
   },
   "author": "Mark Busenitz",
-  "license": "GPL-3.0",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/mucbuc/inject-json/issues"
   },
