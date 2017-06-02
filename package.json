@@ -2,7 +2,7 @@
   "name": "inject-json",
   "version": "0.0.9",
   "description": "inject json files in json file",
-  "main": "inject-json.js",
+  "main": "index.js",
   "bin": "./inject-json.js",
   "scripts": {
     "test": "tape test/test.js"

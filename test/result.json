@@ -1,6 +1,6 @@
 {
   "sublib/def.json": {
-    "sublib2/def.json": {
+    "sublib/sublib2/def.json": {
       "sources": [
         "src/subsrc.cpp" 
       ]
