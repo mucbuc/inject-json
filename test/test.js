@@ -21,8 +21,8 @@ function test( name, jsonPath, expected ) {
   }); 
 }
 
-test( 'recursive inject', 'test.json', './result.json' );
-test( 'example', 'example/host.json', './example/result.json' );
-//test( 'nested inject', 'nested.json', './nested_result.json' );
+// test( 'recursive inject', 'test.json', './result.json' );
+// test( 'example', 'example/host.json', './example/result.json' );
+test( 'nested inject', 'nested.json', './nested_result.json' );
 
-test( 'skip regression', 'branch.json', './branch.json' );
+//test( 'skip regression', 'branch.json', './branch.json' );
