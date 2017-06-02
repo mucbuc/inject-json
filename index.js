@@ -46,7 +46,7 @@ function processFile(pathJSON, injectTag, merge) {
     }; 
   }
 
-  return processJSON( pathJSON, path.dirname(pathJSON) ); 
+  return processJSON( pathJSON, path.relative(process.cwd(), path.dirname(pathJSON) ) ); 
 
   function processJSON(fileJSON, root ) {
     return new Promise( (resolve, reject) => {
