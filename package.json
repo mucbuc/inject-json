@@ -1,6 +1,6 @@
 {
   "name": "inject-json",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "inject json files in json file",
   "main": "index.js",
   "bin": "./inject-json.js",
